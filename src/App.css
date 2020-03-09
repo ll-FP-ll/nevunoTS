@@ -1,38 +1,285 @@
-.App {
+:root {
+  --color-offwhite: 253, 253, 254;
+  --color-dark: 255, 196, 208;
+  --color-medium: 247, 221, 222;
+  --color-light: 251, 232, 231;
+  --color-contrast-light: 252, 245, 238;
+  --color-contrast-dark: 252, 242, 234;
+  --color-darkest: 255, 154, 154;
+}
+
+* {
+  box-sizing: border-box;
+}
+a {
+  color: rgb(var(--color-offwhite));
+  text-decoration: none;
+}
+a:hover {
+  color: rgb(var(--color-contrast-dark));
+  transform: scale(1.2);
+  text-decoration: none;
+}
+
+h1 {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+h3 {
+  font-family: Lobster;
+  border-bottom: 1px solid;
+  margin-left: 2vw;
+}
+html {
+  padding: 0px;
+  margin: 0px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+body {
+  overflow: auto;
+  font-family: "Lato", sans-serif;
+  background-color: rgb(var(--color-light));
+  padding: 0px;
+  margin: 0px;
+  font-size: 5vw;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+button {
+  background-color: rgb(var(--color-darkest));
+  color: rgb(var(--color-offwhite));
+  border: none;
 }
 
-.App-header {
-  background-color: #282c34;
+.App {
+  background-color: rgb(var(--color-offwhite));
   min-height: 100vh;
+  width: 100vw;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  color: rgb(var(--color-darkest));
+}
+
+.App-Header {
+  background-color: rgb(var(--color-dark));
+  padding: 5px;
+  color: rgb(var(--color-light));
+  font-family: Lobster;
+  font-size: 30px;
+}
+
+.App-Header h1 {
+  color: rgb(var(--color-light));
+  margin: 0px 0px 0px 10px;
+  text-align: center;
+}
+
+.App-Footer {
+  display: flex;
+  justify-content: center;
+  font-size: 2.5vw;
+  font-weight: lighter;
+  padding: 5px;
+}
+
+.App-Main {
+  flex-grow: 1;
+  background-color: rgb(var(--color-light));
+}
+
+.App-Btn {
+  background-color: rgb(var(--color-darkest));
+  width: 100%;
+  padding: 8px;
+  font-size: 20px;
+  border: none;
+  color: rgb(var(--color-light));
+  border: 2px solid transparent;
+  transition: 0.3s;
+  opacity: 0.5;
+}
+
+#Result-Btn {
+  margin: 0px auto;
+  width: 80%;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.App-Btn:hover {
+  opacity: 1;
+}
+
+.App-Content {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+}
+
+.App-Container-Dark,
+.App-Container-Light {
+  padding: 5px;
+  min-height: 200px;
+}
+.App-Container-Dark {
+  background-color: rgb(var(--color-medium));
+}
+
+.App-Container-Light {
+  background-color: transparent;
+}
+
+.App-SettingBox {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 53%;
+  margin: 0px auto;
+}
+
+.App-Input-Pair {
+  max-width: 47%;
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(var(--color-dark));
+  color: rgb(var(--color-offwhite));
+  margin: 2px 2px;
+  padding: 0.5vh;
+  font-size: 4vw;
+}
+
+.App-Input-Pair label {
+  text-align: center;
+  justify-self: center;
+}
+
+.App-Input-Pair input {
+  text-align: right;
+  border: none;
+  height: 30px;
+  padding: 1vh 1vw;
+}
+
+.App-SkillBox {
+  display: flex;
+  flex-direction: row;
+  z-index: 0;
+}
+
+.Skill-DropDown {
+  z-index: 5000;
+  height: 35px;
+}
+
+.App-SkillSlot {
+  background-color: rgb(var(--color-dark));
+  margin: 1px 0px;
+  padding: 0.5vh;
+  width: 100%;
+  color: rgb(var(--color-offwhite));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#SkillBoxTitle {
+  text-transform: capitalize;
+}
+
+/* Skill Buttons */
+
+.Skill-Btn {
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 5px;
+  margin: 1px 0px;
+  text-transform: capitalize;
+}
+
+.Dungeon-Slot {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.Dungeon-Btn {
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 5px;
+  margin: 2px 2px;
+  width: 100%;
+  text-transform: capitalize;
+  background-color: rgb(var(--color-darkest));
+  color: rgb(var(--color-offwhite));
+  z-index: 4000;
+}
+
+.Stage-Slot {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.Stage-Btn {
+  text-align: center;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  background-color: rgb(var(--color-darkest));
+  margin: 2px;
+  color: rgb(var(--color-offwhite));
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+
+.Mob-Box {
+  background-color: rgb(var(--color-light));
+  margin: 2vh 6vw;
+  padding: 5px;
+  display: flex;
+}
+
+.Mob-Img {
+  text-align:center;
+  display:flex;
+  flex-direction: column;
+}
+
+.Mob-Thumb {
+  width: 100px;
+  height:100px;
+}
+
+.Mob-Info {
+  margin-left: 10px;
+  text-align: right;
+  flex-grow:1;
+  display:flex;
+  flex-direction: column;
+  font-size:16px;
+}
+
+.Mob-El {
+  text-transform: capitalize;
+  font-size:14px;
+}
+
+.Mob-El:first::after{
+  content: "/"
+}
+
+/* Icon CSS */
+
+.brawlOrMageIcon:hover {
+  transform: scale(1.08);
+}
+
+
+.App-Result-Area {
+  border: 1px solid rgb(var(--color-dark), 0.5);
+  margin: 2vh 2vw;
+  padding: 10px;
+  font-size: 14px;
+  background-color: rgb(var(--color-offwhite),0.2);
 }
