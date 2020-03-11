@@ -6,7 +6,7 @@ function randomizer(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function dmgFormula(atk: any, foe: any): number {
+function dmgFormula(atk: any, foe: any, combatant:any): any {
   let dmgMultiplier;
   let minDmg;
 
@@ -37,20 +37,29 @@ function dmgFormula(atk: any, foe: any): number {
 
   let elementalDmg = 0;
 
-  console.log(...elementalBalance[0].wA)
+  let atkElement = elementalBalance.filter(el => el.name === atk.element)[0];
 
-  const random = Math.floor(Math.random() * dmgMultiplier + minDmg);
+  foe[0].element.map((i: any, k: number) => {
+    if (atkElement.sA.indexOf(i) >= 0) {
+      elementalDmg += 5;
+    }
+    if (atkElement.wA.indexOf(i) >= 0) {
+      elementalDmg -= 5;
+    }
+  });
 
-  return random;
+  const random = Math.floor(Math.random() * dmgMultiplier + minDmg + (combatant[0].stats.atk*5));
+
+  return [random + elementalDmg, random, elementalDmg];
 }
 
-function returnDmg(atk: any, foe: any): any {
-  return [dmgFormula(atk, foe)];
+function returnDmg(atk: any, foe: any, combatant:any): any {
+  return [dmgFormula(atk, foe, combatant), atk.name];
 }
 
 function encounterRoundCalculation(combatant: any, foe: any): any {
   let hitOrMiss = Math.ceil(
-    Math.random() * 100 + (combatant[0].stats.luck - foe[0].stats.luck / 2)
+    Math.random() * 100 + (combatant[0].stats.luck - (foe[0].stats.luck / 2))
   );
 
   let ultThreshold = combatant[1] <= Math.floor((combatant[0].hp / 100) * 20);
@@ -79,9 +88,21 @@ function encounterRoundCalculation(combatant: any, foe: any): any {
     ? combatant[0].skillSet.ultimate
     : combatant[0].skillSet.oneBase;
 
-  let atkNormalDmg = returnDmg(atkNormal[randomSkill], foe);
-  let atkSpecialDmg = returnDmg(atkSpecial[randomSkill], foe);
-  let atkUltDmg = returnDmg(atkUlt, foe);
+  let atkNormalDmg = returnDmg(atkNormal[randomSkill], foe, combatant);
+  let atkSpecialDmg = returnDmg(atkSpecial[randomSkill], foe, combatant);
+  let atkUltDmg = returnDmg(atkUlt, foe, combatant);
+
+  let miss = [[0], "an attack but misses"];
+
+  if (hitOrMiss <= 10) {
+    return miss;
+  } else if (hitOrMiss <= 50) {
+    return atkNormalDmg;
+  } else if (hitOrMiss <= 90) {
+    return atkSpecialDmg;
+  } else {
+    return atkUltDmg;
+  }
 }
 
 function encounterFunction(nev: any, mob: any): any {
@@ -93,72 +114,59 @@ function encounterFunction(nev: any, mob: any): any {
   let fightResult = [];
 
   let nevHP = nev.stats.hp;
-  let mobHP = mob.hp;
+  let mobHP = mob.stats.hp;
 
-  let combatant = nev.stats.luck >= mob.luck ? [nev, nevHP] : [mob, mobHP];
+  let combatant = nev.stats.luck >= mob.stats.luck ? [nev, nevHP] : [mob, mobHP];
   let foe = combatant[0] === nev ? [mob, mobHP] : [nev, nevHP];
 
   let drawCheck;
 
+  let fightInitial = `<b>${nev.name}</b> challenges <b>${mob.name}</b> ${`\n`}`;
+  fightResult.push(fightInitial)
+
   do {
     // Prevent endless loop while developing
 
-    nevHP -= 10;
     let roundEncounter = encounterRoundCalculation(combatant, foe);
     let oldCombatant = combatant[0];
     let oldFoe = foe[0];
-  } while (nevHP > 0 && mobHP > 0);
-
-  /*let roundInc = 0;
-  let drawLine = 20;
-  let totalDmg = 0;
-  let fight = [];
-  let nevHP = nev.hp;
-  let mobHP = mob.hp;
-  let combatant = nev.luck < mob.luck ? [nev, nevHP] : [mob, mobHP];
-  let foe = combatant[0] === nev ? [mob, mobHP] : [nev, nevHP];
-  let draw;
-  do {
-    let roundEncounter = encounterRound(combatant, foe);
-    let oldCombatant = combatant[0];
-    let oldFoe = foe[0];
-
-    let combatantDisplay = `${oldCombatant.name} (${combatant[1]}/${oldCombatant.hp})`;
-    let damageDealt = Math.floor(roundEncounter[1] - oldFoe.def / 2);
+    let combatantDisplay = `${oldCombatant.name} (${combatant[1]}/${oldCombatant.stats.hp})`;
+    let damageDealt = roundEncounter[0][0];
 
     let itCrit = Math.floor(Math.random() * 100);
 
     let critIt =
-      damageDealt > 0 && parseInt(Math.floor(itCrit + oldCombatant.luck)) > 95
+      damageDealt > 0 && Math.floor(itCrit + oldCombatant.stats.luck) > 95
         ? `!!!CRIT!!!`
         : ``;
+
     damageDealt =
       damageDealt <= 0
         ? 0
-        : parseInt(Math.floor(itCrit + parseInt(oldCombatant.luck))) > 95
-        ? parseInt(damageDealt * 2)
+        : Math.floor(itCrit + oldCombatant.stats.luck) > 95
+        ? damageDealt * 2
         : damageDealt;
 
-    let dmgReply = `- ${oldFoe.name} takes ${damageDealt} damage!`;
-    let blockReply = `- ${oldFoe.name} blocks the attack!`;
+
+    let dmgReply = `${oldFoe.name} takes ${damageDealt} damage!`;
+    let blockReply = `${oldFoe.name} blocks the attack!`;
     let missReply = `${oldFoe.name} has dodged skillfully.`;
 
-    function getDmg() {
-      if (roundEncounter.indexOf(`but misses.`) !== -1) {
-        return missReply;
-      } else if (damageDealt < 1) {
-        return blockReply;
-      } else {
-        return dmgReply;
-      }
-    }
-    let roundDisplay = splitIt(
-      `${combatantDisplay} uses ${roundEncounter[2]}: ${critIt} ${
-        roundEncounter[0]
-      } ${getDmg()}`
-    );
+    let reply;
 
-    fight.push(roundDisplay);
+    if (roundEncounter[1].indexOf(`an attack but misses`) !== -1) {
+      reply = missReply;
+    } else if (damageDealt < 1) {
+      reply = blockReply;
+    } else {
+      reply = dmgReply;
+    }
+
+    let roundDisplay = `<li>${combatantDisplay} uses ${
+      roundEncounter[1]
+    }: ${critIt} -  ${reply}</li>`;
+
+    fightResult.push(roundDisplay);
     totalDmg += damageDealt;
     if (oldCombatant === nev) {
       mobHP -= damageDealt;
@@ -169,29 +177,32 @@ function encounterFunction(nev: any, mob: any): any {
       combatant = [nev, nevHP];
       foe = [mob, mobHP];
     }
-    draw = roundInc >= drawLine && totalDmg <= 0;
-    if (draw) {
+    drawCheck = roundNumber >= drawThreshold && totalDmg <= 0;
+    if (drawCheck) {
       break;
     }
-    roundInc++;
+    roundNumber++;
+
+    // Do the itCrit tomorrow
   } while (nevHP > 0 && mobHP > 0);
-  let winner = nevHP <= 0 ? mob : nev;
-  let looser = nevHP <= 0 ? nev : mob;
+
+  console.log(nevHP, totalDmg);
+  let winner = nevHP < 0 ? mob : nev;
+  let looser = nevHP < 0 ? nev : mob;
   let nevWon = `${nev.name} can be very proud of themself.`;
   let nevLost = `${nev.name} must retreat for now, but may come back later.`;
-  if (draw) {
-    fight.push(
-      splitIt(
-        `After ${drawLine} rounds it becomes clear this is a draw!!! ${nev.name} and ${mob.name} musst retreat for now!`
-      )
+
+  if (drawCheck) {
+    fightResult.push(
+      `After ${drawThreshold} rounds it becomes clear this is a draw!!! ${nev.name} and ${mob.name} musst retreat for now!`
     );
   } else {
-    let encounterResolve = `${winner.name} has triumphed over ${looser.name}! ${
+    let encounterResolve = `<b>${winner.name}</b> has triumphed over <u>${looser.name}</u>! ${
       winner === nev ? nevWon : nevLost
     }`;
-    fight.push(encounterResolve);
+    fightResult.push(encounterResolve);
   }
-  return fight; */
+  return fightResult;
 }
 
 export { encounterFunction };

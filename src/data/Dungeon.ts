@@ -84,7 +84,7 @@ const dungeonList = [
       "Fluffy Bumblebee",
       ["water"],
       1,
-      50,
+      15,
       5,
       5,
       5,

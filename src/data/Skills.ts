@@ -179,7 +179,7 @@ const skill = {
   stab: new Skill(
     "Stab",
     "brawl",
-    "swordman",
+    "neutral",
     0,
     "Placeholder as this is not allowed to be empty",
     "250,250,250"
@@ -189,7 +189,7 @@ const skill = {
   attack: new Skill(
     "Attack",
     "mob",
-    "neutral",
+    "water",
     0,
     "The mob charges at you.",
     ""

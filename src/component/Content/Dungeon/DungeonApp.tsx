@@ -7,11 +7,12 @@ import { ResultBox } from "./Components/ResultBox";
 import { dungeonList } from "../../../data/Dungeon";
 
 import { encounterFunction } from "../../../properties/combatCalculation";
+import { skill } from "../../../data/Skills";
 
 export const Dungeon = () => {
   const [nev, setNev] = useState<object>({
     name: "Johnny",
-    element: ["neutral"],
+    element: ["electricity"],
     stats: {
       hp: 10,
       atk: 5,
@@ -20,7 +21,7 @@ export const Dungeon = () => {
     },
     type: "mage",
     skillSet: {
-      oneBase: null,
+      oneBase: skill.fire_ball,
       oneSpecial: null,
       twoBase: null,
       twoSpecial: null,
@@ -29,7 +30,7 @@ export const Dungeon = () => {
   });
   const [mob, setMob] = useState<any>(dungeonList[0].mob[0]);
 
-  const [visibilityDungeon, setVisibilityDungeon] = useState<boolean>(true);
+  const [visibilityDungeon, setVisibilityDungeon] = useState<boolean>(false);
   const [visibilityResult, setVisbilityResult] = useState<boolean>(false);
 
   const [result, setResult] = useState<any>("99 lil bugs in the code");
@@ -68,7 +69,7 @@ export const Dungeon = () => {
   }
 
   function handleResultButtonClick() {
-    encounterFunction(nev, mob);
+    setResult(encounterFunction(nev, mob));
     setVisbilityResult(true);
   }
 
